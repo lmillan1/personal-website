@@ -51,7 +51,7 @@ const publications = [
     year: 2024,
     badge: null,
     links: [
-      { label: "Poster", url: "/USC_Poster.pdf" }
+      { label: "Poster", url: "/personal-website/USC_Poster.pdf" }
     ]
   }
 ];
@@ -70,7 +70,7 @@ const Publications = () => (
           <div className="bg-card p-6 rounded-xl border border-border shadow-sm">
             {pub.badge && (
               <span className="inline-block text-xs font-bold px-2.5 py-1 rounded-full bg-cta-active text-cta-text mb-3">
-                🏆 {pub.badge}
+                {pub.badge}
               </span>
             )}
             <h3 className="font-bold text-lg leading-snug mb-2">
