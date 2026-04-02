@@ -16,9 +16,9 @@ const publicationsData = [
 ];
 
 const projectsData = [
-  { title: "Assuage", emoji: "🏥", tools: ["Swift", "CareKit", "ResearchKit"], desc: "HIPAA-compliant iOS app for remote cancer patient monitoring", link: "https://github.com/netreconlab" },
-  { title: "Wearable Health Analyzer", emoji: "⌚", tools: ["PySpark", "PostgreSQL", "Tableau"], desc: "Analytics pipeline processing 3.6M+ rows of wearable health data", link: "https://github.com/lmillan1/wearable-health-analyzer" },
-  { title: "Movie Rec Analysis", emoji: "🎬", tools: ["Python", "Pandas", "Jupyter"], desc: "Recommendation system built on MovieLens 1M dataset", link: "https://github.com/lmillan1/movie-recommendation-analysis" },
+  { title: "Assuage", emoji: "🏥", tools: ["Swift", "CareKit", "ResearchKit","HealthKit","CareKitEssentials"], desc: "HIPAA-compliant iOS app for remote cancer patient monitoring", longDesc: ["Assuage is a HIPAA-compliant mobile iOS application designed to facilitate remote patient monitoring for cancer patients. Built as part of the Network Reconnaissance Lab at USC, I designed open-source CareKitEssentials features to improve task-tracking accuracy and remote-monitoring reliability.", "I prototyped a ResearchKit SwiftUI API to automate cross-platform health data collection across iOS and watchOS, and architected unit testing mock frameworks to simulate complex data outcomes.", "I also analyzed longitudinal data from a 45-day IRB-approved study using Python and Jupyter Notebooks to quantify adherence trends and system usability among cancer patients."], link: "https://github.com/netreconlab" },
+  { title: "Wearable Health Analyzer", emoji: "⌚", tools: ["PySpark", "PostgreSQL", "Tableau"], desc: "Analytics pipeline processing 3.6M+ rows of wearable health data", longDesc: ["Built a complete health analytics pipeline using PySpark to process over 3.6 million rows of wearable device data, PostgreSQL for storage, and Tableau for visualization. The system surfaces insights about activity patterns, sleep quality, and cardiovascular health across 35 users.", "Computed per-user sleep efficiency across activity cohorts, finding less than 3% variance. This indicated that activity level predicts sleep duration but not sleep quality, challenging common assumptions about the exercise-sleep relationship."], link: "https://github.com/lmillan1/wearable-health-analyzer" },
+  { title: "Movie Rec Analysis", emoji: "🎬", tools: ["Python", "Pandas", "Jupyter"], desc: "Recommendation system built on MovieLens 1M dataset", longDesc: ["Built a movie recommendation system using the MovieLens 1M dataset, which contains 1 million ratings from thousands of users across thousands of movies. Performed data processing and exploratory analysis to understand rating distributions, genre popularity, and user behavior patterns.", "Implemented recommendation algorithms to generate personalized movie suggestions based on user preferences and rating history."], link: "https://github.com/lmillan1/movie-recommendation-analysis" },
 ];
 
 const experienceData = [
@@ -76,7 +76,10 @@ export default function App() {
   const [theme, setTheme] = useState("light");
   useEffect(() => { var t = window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light"; setTheme(t); applyTheme(t); }, []);
   var toggle = useCallback(function() { var n = theme === "dark" ? "light" : "dark"; setTheme(n); applyTheme(n); }, [theme]);
-
+  var [selectedProject, setSelectedProject] = useState(null);
+  var [modalOpen, setModalOpen] = useState(false);
+  function openProject(p) { setSelectedProject(p); setModalOpen(true); document.body.style.overflow = "hidden"; }
+  function closeProject() { setModalOpen(false); document.body.style.overflow = "auto"; }
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", transition: "background 0.4s", fontFamily: "system-ui, sans-serif" }}>
       <style dangerouslySetInnerHTML={{ __html: "*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; } html { scroll-behavior: smooth; } body { -webkit-font-smoothing: antialiased; } .bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 960px; margin: 0 auto; padding: 80px 20px 40px; } .hero-span { grid-column: span 2; } .photo-span { grid-column: span 1; } .about-span { grid-column: span 2; } .edu-span { grid-column: span 1; } .skills-span { grid-column: span 1; } .exp-span { grid-column: span 2; } .pubs-span { grid-column: span 3; } .projects-label { grid-column: span 3; } .contact-span { grid-column: span 3; } @media (max-width: 700px) { .bento { grid-template-columns: 1fr; } .hero-span, .photo-span, .about-span, .edu-span, .skills-span, .exp-span, .pubs-span, .projects-label, .contact-span { grid-column: span 1; } }" }} />
@@ -146,16 +149,18 @@ export default function App() {
           <Reveal><p style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 0 }}>Projects</p></Reveal>
         </div>
         {projectsData.map(function(p, i) { return (
-          <Card key={i}>
-            <Reveal>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 10 }}>
-                <span style={{ fontSize: 32 }}>{p.emoji}</span>
-                <a href={p.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", textDecoration: "none", padding: "3px 10px", border: "1px solid var(--accent)", borderRadius: 6 }}>GitHub</a>
-              </div>
-              <h4 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 6 }}>{p.title}</h4>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>{p.tools.map(function(t, j) { return <Tag key={j}>{t}</Tag>; })}</div>
-              <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.6 }}>{p.desc}</p>
-            </Reveal>
+          <Card key={i} style={{ cursor: "pointer" }}>
+            <div onClick={function() { openProject(p); }}>
+              <Reveal>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 10 }}>
+                  <span style={{ fontSize: 32 }}>{p.emoji}</span>
+                  <a href={p.link} target="_blank" rel="noopener noreferrer" onClick={function(e) { e.stopPropagation(); }} style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", textDecoration: "none", padding: "3px 10px", border: "1px solid var(--accent)", borderRadius: 6 }}>GitHub</a>
+                </div>
+                <h4 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 6 }}>{p.title}</h4>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 8 }}>{p.tools.map(function(t, j) { return <Tag key={j}>{t}</Tag>; })}</div>
+                <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.6 }}>{p.desc}</p>
+              </Reveal>
+            </div>
           </Card>
         ); })}
         <Card span="contact-span" style={{ background: "var(--accent)", border: "none" }}>
@@ -169,6 +174,18 @@ export default function App() {
           </Reveal>
         </Card>
       </div>
+      {modalOpen && selectedProject ? (
+          <div onClick={closeProject} style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.85)", display: "flex", justifyContent: "center", alignItems: "start", padding: "60px 16px", overflowY: "auto" }}>
+            <motion.div onClick={function(e) { e.stopPropagation(); }} initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={{ width: "100%", maxWidth: 600, background: "var(--card)", borderRadius: 16, border: "1px solid var(--border)", padding: 32, position: "relative" }}>
+              <button onClick={closeProject} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "var(--text-2)" }}>✕</button>
+              <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}>{selectedProject.emoji}</span>
+              <h3 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>{selectedProject.title}</h3>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>{selectedProject.tools.map(function(t, i) { return <Tag key={i}>{t}</Tag>; })}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>{selectedProject.longDesc.map(function(text, i) { return <p key={i} style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.7 }}>{text}</p>; })}</div>
+              <a href={selectedProject.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)", textDecoration: "none", padding: "6px 14px", border: "1px solid var(--accent)", borderRadius: 8 }}>View on GitHub</a>
+            </motion.div>
+          </div>
+        ) : null}
       <footer style={{ textAlign: "center", padding: "24px", fontSize: 12, color: "var(--text-2)" }}>2026 {SITE.name}</footer>
     </div>
   );
